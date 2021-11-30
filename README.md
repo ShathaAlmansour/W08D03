@@ -1,19 +1,5 @@
 # W08D03
 
-## Folder work
-1- The ability to create a special task for each user and modify it,
-
-2-Delete the account and the task,
-
-3-Display the tags,
-
-4- Passcode encryption,
-
-5- Giving the authority,
-
-6- The property of passing admin owners,
-
-7- Add a new skyma, the name of your task,
 
 ## The packages used
 1- npm i express (To build a backend server)
@@ -42,133 +28,154 @@ module.exports = mongoose.model("Role", role);
 ## models-userSchema
 const mongoose = require("mongoose");
 
-const user = new mongoose.Schema({ email: { type: String, required: true, unique: true }, password: { type: String, require: true }, role: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }], });
-
-module.exports = mongoose.model("User", user);
-
-routers-controllers-role
-const rolemodel = require("../../db/models/role");
-
-const newrolr =(req,res)=>{ const {role,permossion}=req.body;
-
-const newrolr = new rolemodel({
-    role,
-    permossion,
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
+  task: { type: mongoose.Schema.Types.ObjectId, ref: "Task" },
 
 });
-newrolr
-.save()
-.then((result)=>{
-    res.json(result);
 
-})
-.catch((err)=>{
-   res.status(err)
-})
-}
-
-const getrole = (req, res)=>{ rolemodel .find({}) .then(result=>{ res.json(result);
-
-})
-.catch((err)=>{
- res.json(err);
-})
-}
-
-module.exports = {newrolr,getrole}
+module.exports = mongoose.model("User", userSchema);
 
 ## routers-controllers-user
-const usermodel = require("../../db/models/user");
 
-const bcrypt = require("bcrypt"); const jwt = require("jsonwebtoken");
+  const userModel = require("./../../db/models/user");
+const bcrypt = require("bcrypt");
+var jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-const salt =Number(process.env.SALT); const secret =process.env.SECRET;
+const signup = async (req, res) => {
+  const { email, password, role } = req.body;
 
-const resgister =async (req, res, next) => { const {email,password,role } = req.body;
+  const savedEmail = email.toLowerCase();
+  const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT));
 
-const savedEmail = email.toLowerCase(); const savedPassword = await bcrypt.hash(password, salt);
+  const newUser = new userModel({
+    email: savedEmail,
+    password: hashedPassword,
+    role,
+  });
 
-const newuser = new usermodel({ email: savedEmail, password: savedPassword, role, }); newuser .save() .then((result) => {
+  newUser
+    .save()
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((err) => {
+      res.status(404).send(err);
+    });
+};
+const signin = (req, res) => {
+  const { email, password } = req.body;
 
-  res.json(result);
-})
-.catch((err) => {
-  res.send(err);
-});
-}
+  const savedEmail = email.toLowerCase();
 
-const login = (req, res) => { const { email, password } = req.body; const savedEmail = email.toLowerCase();
-
-usermodel
-  .findOne({ email: savedEmail })
-  .then(async (result) => {
-    if (result) {
-      if (result.email == email) {
-        const savedPassword = await bcrypt.compare(password, result.password);
-        const payload = {
-          email,
-        };
-        if (savedPassword) {
-          const token = jwt.sign(payload, secret);
-
-          res.status(200).json({ result, token });
+  userModel
+    .findOne({ email: savedEmail })
+    .then(async (result) => {
+      if (result) {
+        if (result.email == savedEmail) {
+          const checkedPassword = await bcrypt.compare(
+            password,
+            result.password
+          );
+          if (checkedPassword) {
+            const payload = { role: result.role };
+            const options = { expiresIn: "1h" };
+            const secret = process.env.SECRET;
+            const token = await jwt.sign(payload, secret, options);
+            res.status(200).send({ result, token });
+          } else {
+            res.status(404).send("Invalid email or password");
+          }
         } else {
-          res.status(400).json("Wrong email or password");
+          res.status(404).send("Invalid email or password");
         }
       } else {
-        res.status(400).json("Wrong email or password");
+        res.status(404).send("User doesn't exist");
       }
-    } else {
-      res.status(404).json("Email not exist");
-    }
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+};
+
+const getalluser = (req, res) => {
+  usermodel
+  .find({})
+  .then((result) => {
+    res.json(result);
   })
   .catch((err) => {
-    res.send(err);
+    res.json(err);
   });
 };
 
-module.exports ={resgister,login,}
+const deletuser = (req, res) => {
+  const { _id } = req.params;
+  taskmodel
+  .findByIdAndDelete({_id})
+  .then((result) => {
+    res.json(result);
+  })
+  .catch((err) => {
+    res.json(err);
+  });
+};
+
+module.exports = { signup, signin, getalluser, deletuser };
+
 
 ## routers-routes-role
-const express = require('express');
+const mongoose = require("mongoose");
 
-const roleRouter =express.Router();
+const roleSchema = new mongoose.Schema({
+  role: { type: String, required: true },
+  permission: { type: Array, required: true },
+});
 
-const {newrolr,getrole} =require("../controllers/role");
-
-roleRouter.post("/role",newrolr); roleRouter.get("/read",getrole);
-
-module.exports = roleRouter;
+module.exports = mongoose.model("Role", roleSchema);
 
 ## routers-routes-user
-const express = require("express"); const userRoute = express.Router();
+const mongoose = require("mongoose");
 
-const{resgister,login,}= require("./../controllers/user");
+const userSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
+  task: { type: mongoose.Schema.Types.ObjectId, ref: "Task" },
 
-userRoute.post("/resgister",resgister); userRoute.post("/login",login);
+});
 
-module.exports = userRoute
+module.exports = mongoose.model("User", userSchema);
 
  ## index
 const express = require("express");
-
-const dotenv = require("dotenv");
-
+const morgan = require("morgan");
 const cors = require("cors");
+require("dotenv").config();
+require("./db");
 
-const app = express()
+const app = express();
+app.use(express.json());
+app.use(morgan("dev"));
+app.use(cors());
 
-dotenv.config()
+const roleRouter = require("./routers/routes/role");
+app.use(roleRouter);
 
-const db = require("./db/index"); app.use(express.json());
+const userRouter = require("./routers/routes/user");
+app.use(userRouter);
 
-const roleRouter =require("./routers/routes/role"); const userRoute = require("./routers/routes/user");
+const taskRouter = require("./routers/routes/task");
+app.use(taskRouter);
 
-app.use(roleRouter); app.use(userRoute);
+const PORT = process.env.PORT || 4000;
 
-const PORT = process.env.PORT||5000; app.use(cors())
-
-app.listen(PORT, () => { console.log(server is running on port ${PORT}); });
+app.listen(PORT, () => {
+  console.log(`server running at port ${PORT}`);
+});
 
 ## .env and gitignore
 It contains sensitive and important data and it is not recommended to display it if the port is of great importance
