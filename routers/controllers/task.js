@@ -1,13 +1,12 @@
 const taskmodel = require("../../db/models/task");
 const newtask = (req, res) => {
-  const { name, task,isDelete } = req.body;
+  const { name, task } = req.body;
 
   const newtask = new taskmodel({
     name,
-    task,
-    isDelete,
+    user: req.token.id,
   });
-  
+
   newtask
     .save()
     .then((result) => {
@@ -19,8 +18,8 @@ const newtask = (req, res) => {
 };
 
 const getTasks = (req, res) => {
-    taskmodel
-    .find({})
+  taskmodel
+    .find({ user: req.token.id })
     .then((result) => {
       res.json(result);
     })
@@ -30,11 +29,15 @@ const getTasks = (req, res) => {
 };
 
 const deletTasks = (req, res) => {
-    const { _id } = req.params;
-    taskmodel
-    .findByIdAndDelete({_id})
+  const { _id } = req.params;
+  taskmodel
+    .findByIdAndDelete(_id, { $set: { isDelete: true } })
     .then((result) => {
-      res.json(result);
+      if (result) {
+        res.status(200).json("delettask");
+      } else {
+        res.status(404).json("user undefind");
+      }
     })
     .catch((err) => {
       res.json(err);
@@ -42,9 +45,9 @@ const deletTasks = (req, res) => {
 };
 
 const updateTasks = (req, res) => {
-    const {name} =req.body;
-    const { _id } = req.params;
-    taskmodel
+  const { name } = req.body;
+  const { _id } = req.params;
+  taskmodel
     .findByIdAndUpdate(_id, { $set: { name: name } })
     .then((result) => {
       res.json(result);
@@ -54,4 +57,4 @@ const updateTasks = (req, res) => {
     });
 };
 
-module.exports = { newtask, getTasks,deletTasks,updateTasks };
+module.exports = { newtask, getTasks, deletTasks, updateTasks };
