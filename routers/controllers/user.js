@@ -59,4 +59,27 @@ const signin = (req, res) => {
     });
 };
 
-module.exports = { signup, signin };
+const getalluser = (req, res) => {
+  usermodel
+  .find({})
+  .then((result) => {
+    res.json(result);
+  })
+  .catch((err) => {
+    res.json(err);
+  });
+};
+
+const deletuser = (req, res) => {
+  const { _id } = req.params;
+  taskmodel
+  .findByIdAndDelete({_id})
+  .then((result) => {
+    res.json(result);
+  })
+  .catch((err) => {
+    res.json(err);
+  });
+};
+
+module.exports = { signup, signin, getalluser, deletuser };
