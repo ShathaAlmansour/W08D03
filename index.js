@@ -10,6 +10,8 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
 
+const roleRouter = require("./routers/routes/role");
+app.use(roleRouter);
 
 const PORT = process.env.PORT || 4000;
 app.use(cors());
