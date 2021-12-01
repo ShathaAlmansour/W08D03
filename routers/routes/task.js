@@ -7,8 +7,8 @@ const {
   updateTasks,
 } = require("../controllers/task");
 
-const authentication = require("./../middleware/authentication");
-const authorization = require("./../middleware/authorization");
+const authentication = require("./../middlewares/authentication");
+const authorization = require("./../middlewares/authorization");
 
 taskRouter.post("/task", authentication, newtask);
 taskRouter.get("/tasks", authentication, getTasks);
