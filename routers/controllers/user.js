@@ -33,7 +33,7 @@ const signin = (req, res) => {
     .findOne({ email: savedEmail })
     .then(async (result) => {
       if (result) {
-        if (result.email == savedEmail) {
+        if (result.email == email) {
           const checkedPassword = await bcrypt.compare(
             password,
             result.password

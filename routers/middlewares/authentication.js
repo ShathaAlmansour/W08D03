@@ -12,5 +12,5 @@ const authentication = (req, res, next) => {
   } catch (error) {
     res.status(403).send(error);
   }
-}
-module.exports=authentication;
+};
+module.exports = authentication;

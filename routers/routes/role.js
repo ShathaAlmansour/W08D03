@@ -5,8 +5,8 @@ const authorization = require ("./../middlewares/authorization")
 
 const roleRouter = express.Router();
 
-roleRouter.post("/create", create);
-roleRouter.get("/roles", authentication, authorization, roles);
+roleRouter.post("/create",create);
+roleRouter.get("/roles",authentication,  authorization, roles);
 
 
 module.exports = roleRouter;
