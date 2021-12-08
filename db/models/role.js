@@ -1,8 +1,10 @@
+// عمل ريكواير للمونقوز
 const mongoose = require("mongoose");
 
-const roleSchema = new mongoose.Schema({
-  role: { type: String, required: true },
-  permission: { type: Array, required: true },
+// سكيما للرول فيها الرول والبراميشن
+const role = new mongoose.Schema({
+  role: { type: String },
+  permossion: { type: Array },
 });
-
-module.exports = mongoose.model("Role", roleSchema);
+//   اكسبورت للرول
+module.exports = mongoose.model("Role", role);

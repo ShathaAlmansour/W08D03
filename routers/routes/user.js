@@ -1,14 +1,18 @@
 const express = require("express");
-const { signup, signin,getalluser, deletuser} = require("../controllers/user");
-const authentication = require("./../middlewares/authentication");
-const authorization = require("./../middlewares/authorization");
+const userRoute = express.Router();
 
-const userRouter = express.Router();
+const {
+  resgister,
+  login,
+  getalluser,
+  deletuser,
+} = require("./../controllers/user");
+const authentication = require("./../middleware/authentication");
+const authorization = require("./../middleware/authorization");
 
-userRouter.post("/signup", signup);
-userRouter.post("/signin", signin);
+userRoute.post("/resgister", resgister);
+userRoute.post("/login", login);
 
-userRouter.get("/getalluser",authentication,authorization, getalluser);
-userRouter.delete("/userdelet/:_id",authentication,authorization, deletuser);
-
-module.exports = userRouter;
+userRoute.get("/allusers", authentication, authorization, getalluser);
+userRoute.delete("/userdelet/:_id", authentication, authorization, deletuser);
+module.exports = userRoute;

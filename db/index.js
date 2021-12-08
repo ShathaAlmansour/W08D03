@@ -1,16 +1,20 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
 
-
+// عملت ريكواير لدونت انف لتخزيني الدي بي بداخلها
+const dotenv = require("dotenv");
+dotenv.config();
+// استدعاء الداتا بيس من الدونت انف
+const DB = process.env.DB;
+// احفظها كما هي
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 };
-
-mongoose.connect(process.env.DB, options, () => {
-  try {
-    console.log("DB Can Use");
-  } catch (error) {
-    console.error(error);
+// التأكد من ان الداتا بيس شغاله
+mongoose.connect(DB, options).then(() => {
+    console.log("DB Ready To Use");
+  },
+  (err) => {
+    console.log(err);
   }
-});
+);

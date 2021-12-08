@@ -1,11 +1,11 @@
+// ريكواير للمونقوز
 const mongoose = require("mongoose");
-
-const userSchema = new mongoose.Schema({
+// انشاء سكيما فيها الايميل والباسورد وايضا الرول
+const user = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, require: true },
   role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
-  task: { type: mongoose.Schema.Types.ObjectId, ref: "Task" },
-
 });
 
-module.exports = mongoose.model("User", userSchema);
+// اكسبورت لليوزر
+module.exports = mongoose.model("User", user);
