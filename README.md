@@ -16,6 +16,10 @@
 
 1- npm i nodmone (globe)
 
+## ER Daigram
+
+![Untitled Diagram-Page-1 drawio](https://user-images.githubusercontent.com/92248175/145342602-1c900010-e0a8-4bf5-b248-74f665af8fb7.png)
+
 ## models-roleSchema
 const mongoose = require("mongoose");
 
