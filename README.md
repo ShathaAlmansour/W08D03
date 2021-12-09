@@ -20,6 +20,10 @@
 
 ![Untitled Diagram-Page-1 drawio](https://user-images.githubusercontent.com/92248175/145342602-1c900010-e0a8-4bf5-b248-74f665af8fb7.png)
 
+## UML Daigram
+![Untitled Diagram-Page-7 drawio](https://user-images.githubusercontent.com/92248175/145381266-efbeda4b-c671-49e8-a8a2-1a84cb4e0e10.png)
+
+
 ## models-roleSchema
 const mongoose = require("mongoose");
 
